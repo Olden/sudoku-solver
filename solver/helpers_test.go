@@ -1,7 +1,6 @@
 package solver
 
 import (
-	"errors"
 	"reflect"
 	"testing"
 )
@@ -24,118 +23,97 @@ func TestAll(t *testing.T) {
 	}
 }
 
-func TestMakeRange(t *testing.T) {
-	for _, v := range makeRangeCases {
-		r := MakeRange(v.s, v.params...)
-		if !reflect.DeepEqual(v.expected, r) {
-			t.Errorf("result: %v \n\texpected: %v", r, v.expected)
-		}
-	}
-
-}
-
-var errInvalidArgumentNumber = errors.New("invalid argument number")
-
-func TestMakeRangeWithInvalidArgumentsNumber(t *testing.T) {
-
-	got := panicValue(func() { MakeRange(1, 2, 3, 4) })
-
-	a, ok := got.(error)
-	if !reflect.DeepEqual(a, errInvalidArgumentNumber) || !ok {
-		t.Errorf("expected: %v", errInvalidArgumentNumber)
-	}
-}
-
-var errInvalidStep = errors.New("step can't be equal to zero")
-
-func TestMakeRangeInvalidStep(t *testing.T) {
-	got := panicValue(func() { MakeRange(1, 0, 0) })
-
-	a, ok := got.(error)
-	if !reflect.DeepEqual(a, errInvalidStep) || !ok {
-		t.Errorf("expected: %v", errInvalidStep)
-	}
-
-}
-
-func panicValue(fn func()) (recovered interface{}) {
-	defer func() {
-		recovered = recover()
-	}()
-	fn()
-	return
-}
-
-type makeRangeCase struct {
-	s        int
-	params   []int
-	expected []int
-}
-
-var makeRangeCases = []makeRangeCase{
-	{
-		10,
-		[]int{},
-		[]int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9},
-	},
-	{
-		1,
-		[]int{11},
-		[]int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
-	},
-	{
-		0,
-		[]int{30, 5},
-		[]int{0, 5, 10, 15, 20, 25},
-	},
-	{
-		0,
-		[]int{10, 3},
-		[]int{0, 3, 6, 9},
-	},
-	{
-		0,
-		[]int{-10, -1},
-		[]int{0, -1, -2, -3, -4, -5, -6, -7, -8, -9},
-	},
-	{
-		0,
-		[]int{},
-		[]int{},
-	},
-	{
-		1,
-		[]int{0},
-		[]int{},
-	},
-}
-
-func TestCompareIntSlices(t *testing.T) {
-	if CompareIntSlices([]int{1, 2, 3}, []int{3, 2, 1}) != true {
+func TestCompareFloat64Slices(t *testing.T) {
+	if CompareFloat64Slices([]float64{1, 2, 3}, []float64{3, 2, 1}) != true {
 		t.Errorf("slices must be equals")
 	}
 
-	if CompareIntSlices([]int{1, 2, 3}, []int{1, 2, 3}) != true {
+	if CompareFloat64Slices([]float64{1, 2, 3}, []float64{1, 2, 3}) != true {
 		t.Errorf("slices must be equals")
 	}
 
-	if CompareIntSlices([]int{1, 2, 3}, []int{1}) != false {
+	if CompareFloat64Slices([]float64{1, 2, 3}, []float64{1}) != false {
 		t.Errorf("slices must be not equals")
 	}
 }
 
 func TestSubset(t *testing.T) {
-	a := []int{1, 2, 3}
-	b := []int{3, 2, 1}
+	a := []float64{1, 2, 3}
+	b := []float64{3, 2, 1}
 	if Subset(a, b) != true {
 		t.Errorf("slice %v must be in subset %v", a, b)
 	}
 
-	if CompareIntSlices(a, a) != true {
+	if CompareFloat64Slices(a, a) != true {
 		t.Errorf("slice %v must be in subset %v", a, a)
 	}
 
-	if CompareIntSlices(a, []int{1}) != false {
+	if CompareFloat64Slices(a, []float64{1}) != false {
 		t.Errorf("slice %v must be not in subset %v", a, []int{1})
+	}
+}
+
+func TestTranspose(t *testing.T) {
+	a := [][][][]interface{}{
+		[][][]interface{}{
+			[][]interface{}{
+				[]interface{}{1, 2, 3},
+				[]interface{}{4, 5, 6},
+			},
+			[][]interface{}{
+				[]interface{}{10, 20, 30},
+				[]interface{}{40, 50, 60},
+			},
+			[][]interface{}{
+				[]interface{}{101, 201, 301},
+				[]interface{}{401, 501, 601},
+			},
+		},
+		[][][]interface{}{
+			[][]interface{}{
+				[]interface{}{100, 200, 300},
+				[]interface{}{400, 500, 600},
+			},
+			[][]interface{}{
+				[]interface{}{1000, 2000, 3000},
+				[]interface{}{4000, 5000, 6000},
+			},
+			[][]interface{}{
+				[]interface{}{1001, 2001, 3001},
+				[]interface{}{4001, 5001, 6001},
+			},
+		},
+	}
+
+	ex := [][][][]interface{}{
+		[][][]interface{}{
+			[][]interface{}{
+				[]interface{}{1, 2, 3},
+				[]interface{}{10, 20, 30},
+				[]interface{}{101, 201, 301},
+			},
+			[][]interface{}{
+				[]interface{}{4, 5, 6},
+				[]interface{}{40, 50, 60},
+				[]interface{}{401, 501, 601},
+			},
+		},
+		[][][]interface{}{
+			[][]interface{}{
+				[]interface{}{100, 200, 300},
+				[]interface{}{1000, 2000, 3000},
+				[]interface{}{1001, 2001, 3001},
+			},
+			[][]interface{}{
+
+				[]interface{}{400, 500, 600},
+				[]interface{}{4000, 5000, 6000},
+				[]interface{}{4001, 5001, 6001},
+			},
+		},
+	}
+
+	if !reflect.DeepEqual(Transpose(a...), ex) {
+		t.Errorf("transpose didnt work")
 	}
 }

@@ -5,8 +5,5 @@ import (
 )
 
 func main() {
-	var v int64;
-	v = 9223372036854775810;
-	spew.Dump(v);
-	
+	spew.Dump(float64(5 / 2))
 }

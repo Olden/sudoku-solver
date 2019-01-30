@@ -1,8 +1,10 @@
 package solver
 
-import "errors"
-import "math"
-import "sort"
+import (
+	"errors"
+	"math"
+	"sort"
+)
 
 // Any return `true` if any element of the iterable is true. If the iterable is empty, return `false`
 func Any(i []interface{}) bool {
@@ -35,8 +37,8 @@ func All(i []interface{}) bool {
 // If step is positive, the last element is the largest `start + i * step` less than stop;
 // if step is negative, the last element is the smallest `start + i * step` greater than stop.
 // Step must not be zero (or else Error is raised)
-func MakeRange(s int, params ...int) []int {
-	r := []int{}
+func MakeRange(s int, params ...int) []float64 {
+	r := []float64{}
 	var start, stop, step int
 	step = 1
 	switch len(params) {
@@ -58,15 +60,15 @@ func MakeRange(s int, params ...int) []int {
 	}
 
 	for i := start; math.Abs(float64(i*step)) < math.Abs(float64(stop)); i++ {
-		r = append(r, i*step)
+		r = append(r, float64(i*step))
 	}
 
 	return r
 }
 
-// CompareIntSlices compare two slices of integers
+// CompareFloat64Slices compare two slices of integers
 // return `true` if they are equal, otherwise returns `false`
-func CompareIntSlices(a, b []int) bool {
+func CompareFloat64Slices(a, b []float64) bool {
 	if len(a) != len(b) {
 		return false
 	}
@@ -75,8 +77,8 @@ func CompareIntSlices(a, b []int) bool {
 		return false
 	}
 
-	sort.Ints(a)
-	sort.Ints(b)
+	sort.Float64s(a)
+	sort.Float64s(b)
 	for i, v := range a {
 		if v != b[i] {
 			return false
@@ -90,8 +92,8 @@ func CompareIntSlices(a, b []int) bool {
 // contained in the second array. There must be at least
 // the same number of duplicate values in second as there
 // are in first.
-func Subset(first, second []int) bool {
-	set := make(map[int]int)
+func Subset(first, second []float64) bool {
+	set := make(map[float64]int)
 	for _, value := range second {
 		set[value]++
 	}
@@ -107,4 +109,61 @@ func Subset(first, second []int) bool {
 	}
 
 	return true
+}
+
+func Transpose(params ...[][][]interface{}) [][][][]interface{} {
+	r := [][][][]interface{}{}
+
+	for _, bR := range params {
+		newBR := [][][]interface{}{}
+		for j := 0; j < len(bR[0]); j++ {
+			sR := [][]interface{}{}
+			for i := 0; i < len(bR); i++ {
+				sR = append(sR, bR[i][j])
+			}
+			newBR = append(newBR, sR)
+		}
+
+		r = append(r, newBR)
+	}
+
+	return r
+}
+
+func Combinations(iterable []*Cell, r int) (result [][]*Cell) {
+	pool := iterable
+	n := len(pool)
+	result = make([][]*Cell, r)
+
+	if r > n {
+		return
+	}
+
+	indices := make([]int, r)
+	for i := range indices {
+		indices[i] = i
+	}
+
+	for i, el := range indices {
+		result[i] = append(result[i], pool[el])
+	}
+
+	for {
+		i := r - 1
+		for ; i >= 0 && indices[i] == i+n-r; i-- {
+		}
+
+		if i < 0 {
+			return
+		}
+
+		indices[i]++
+		for j := i + 1; j < r; j++ {
+			indices[j] = indices[j-1] + 1
+		}
+
+		for ; i < len(indices); i++ {
+			result[i] = append(result[i], pool[indices[i]])
+		}
+	}
 }
