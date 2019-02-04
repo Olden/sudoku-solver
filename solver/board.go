@@ -14,9 +14,9 @@ import (
 
 type Board struct {
 	log        *log.Logger
-	c          [][9]*Cell
+	c          [][]*Cell
 	fc         []*Cell
-	strategies map[int]*Strategy
+	strategies []*Strategy
 }
 
 var UnitType = []string{"row", "column", "block"}
@@ -39,19 +39,25 @@ func NewBoard(l *log.Logger, cells string) *Board {
 	var row []int
 	b := &Board{
 		log: l,
-		strategies: map[int]*Strategy{
-			0: &Strategy{"nothing", NothingStrategy},
-			1: &Strategy{"naked singles", SolveStripNakedSingles},
-			// 2: &Strategy{"hidden singles", SolveHiddenSingles},
+		strategies: []*Strategy{
+			&Strategy{"nothing", NothingStrategy},
+			&Strategy{"naked singles", SolveStripNakedSingles},
+			&Strategy{"hidden singles", SolveHiddenSingles},
+			&Strategy{"naked pairs", SolveNakedPairs},
+			&Strategy{"hidden pairs", SolveHiddenPairs},
+			&Strategy{"naked triples", SolveNakedTriples},
+			&Strategy{"hidden triples", SolveHiddenTriples},
+			&Strategy{"naked quads", SolveNakedQuads},
+			&Strategy{"hidden quads", SolveHiddenQuads},
 		},
 	}
 
 	for len(c) != 0 {
 		row, c = c[:9], c[9:]
-		var r [9]*Cell
+		var r []*Cell
 		for i, v := range row {
 			cell := NewCellFromInt(i, len(b.c), v)
-			r[i] = cell
+			r = append(r, cell)
 			b.fc = append(b.fc, cell)
 		}
 		b.c = append(b.c, r)
@@ -124,14 +130,24 @@ func (b *Board) verify() bool {
 	return verified
 }
 
-func (b *Board) unit(t string, i int) [9]*Cell {
-	units := map[string]func(int) [9]*Cell{
+func (b *Board) unit(t string, i int) []*Cell {
+	units := map[string]func(int) []*Cell{
 		"row":    b.row,
 		"column": b.col,
 		"block":  b.block,
 	}
 
 	return units[t](i)
+}
+
+func (b *Board) unitName(t string, i int) string {
+	unitNames := map[string]string{
+		"row":    rows,
+		"column": cols,
+		"block":  blocks,
+	}
+
+	return string(unitNames[t][i])
 }
 
 func (b *Board) cell(x, y int) *Cell {
@@ -218,26 +234,26 @@ func (b *Board) solveStrategies(maxDifficulty, exclude int) int {
 	if b.isSolved() {
 		return 0
 	}
-	for dif, strat := range b.strategies {
-		if dif == 0 || dif > maxDifficulty {
+	for i := 0; i < len(b.strategies); i++ {
+		if i == 0 || i > maxDifficulty {
 			continue
 		}
 
-		b.log.Printf("Try %s", strat.name)
-		changed := strat.f(b)
+		b.log.Printf("Try %s", b.strategies[i].name)
+		changed := b.strategies[i].f(b)
 
 		if !changed {
-			b.log.Printf("...No %s found", strat.name)
+			b.log.Printf("...No %s found", b.strategies[i].name)
 		}
 		if changed {
-			return dif
+			return i
 		}
 	}
 
 	return 0
 }
 
-func (b *Board) row(y int) [9]*Cell {
+func (b *Board) row(y int) []*Cell {
 	return b.c[y]
 }
 func (b *Board) rowWithout(x, y int) []*Cell {
@@ -248,10 +264,10 @@ func (b *Board) rowWithout(x, y int) []*Cell {
 	return r
 }
 
-func (b *Board) col(x int) [9]*Cell {
-	r := [9]*Cell{}
-	for i, v := range b.c {
-		r[i] = v[x]
+func (b *Board) col(x int) []*Cell {
+	r := []*Cell{}
+	for _, v := range b.c {
+		r = append(r, v[x])
 	}
 
 	return r
@@ -268,7 +284,7 @@ func (b *Board) colWithout(x, y int) []*Cell {
 	return r
 }
 
-func (b *Board) block(i int) [9]*Cell {
+func (b *Board) block(i int) []*Cell {
 	y, x := i/3, i%3
 
 	r := [9]*Cell{}
@@ -278,7 +294,7 @@ func (b *Board) block(i int) [9]*Cell {
 		}
 	}
 
-	return r
+	return r[0:len(r)]
 }
 
 func (b *Board) blockWithout(x, y int) []*Cell {

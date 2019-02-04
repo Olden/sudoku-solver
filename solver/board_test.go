@@ -8,26 +8,99 @@ import (
 	"testing"
 )
 
-func TestBoardSolving(t *testing.T) {
+func TesеNakedSinglesSolving(t *testing.T) {
 	log := log.New(ioutil.Discard, "", 0)
 	b := NewBoard(log, "273964851469158723185273469821346597546792318397815246718529634632481975954637180")
 
 	solution := "273964851469158723185273469821346597546792318397815246718529634632481975954637182"
-	b.solve(8, 0)
+	b.solve(1, 0)
 
 	if solution != b.codeStr() {
 		t.Errorf("Board: %s, is not solved correctly: %s", b.codeStr(), solution)
 	}
 }
 
-func TestBoardNotSolving(t *testing.T) {
+func TestHiddenSinglesSolving(t *testing.T) {
 	log := log.New(ioutil.Discard, "", 0)
 	b := NewBoard(log, "000000001000000020000003000000040500006000300007810000010020004030000070950000000")
 
+	solution := "273964851469158723185273469821346597546792318397815246718529634632481975954637182"
+	b.solve(2, 0)
+
+	if solution != b.codeStr() {
+		t.Errorf("Board: %s, is not solved correctly: %s", b.codeStr(), solution)
+	}
+}
+
+func TestNakedPairsSolving(t *testing.T) {
+	log := log.New(ioutil.Discard, "", 0)
+	b := NewBoard(log, "000000000000000012003045000000000400000600000060100070000260080405000009700000000")
+
+	solution := "678921345954736812213845697891573426347692158562184973139267584425318769786459231"
+	b.solve(3, 0)
+
+	if solution != b.codeStr() {
+		t.Errorf("Board: %s, is not solved correctly: %s", b.codeStr(), solution)
+	}
+}
+
+func TestNakedTriplesSolving(t *testing.T) {
+	log := log.New(ioutil.Discard, "", 0)
+	b := NewBoard(log, "000000001000000023004005000000010000006027000089000500000400900050900000100000000")
+
+	solution := "938742651571698423624135789745819236316527894289364517863451972452973168197286345"
+	b.solve(5, 0)
+
+	if solution != b.codeStr() {
+		t.Errorf("Board: %s, is not solved correctly: %s", b.codeStr(), solution)
+	}
+}
+
+func TestNakedQuadsSolving(t *testing.T) {
+	log := log.New(ioutil.Discard, "", 0)
+	b := NewBoard(log, "000000001000000002000034000000000050001600000370000040000800000006102000050000930")
+
+	solution := "425768391783915462619234785264389157591647823378521649947853216836192574152476938"
+	b.solve(7, 0)
+
+	if solution != b.codeStr() {
+		t.Errorf("Board: %s, is not solved correctly: %s", b.codeStr(), solution)
+	}
+}
+
+func TestHiddenPairsSolving(t *testing.T) {
+	log := log.New(ioutil.Discard, "", 0)
+	b := NewBoard(log, "000000001000000023004005000000002000010000400360070000000610000005000800007030000")
+
+	solution := "276389541581746923934125678458962317712853469369471285893614752145297836627538194"
+	b.solve(4, 0)
+
+	if solution != b.codeStr() {
+		t.Errorf("Board: %s, is not solved correctly: %s", b.codeStr(), solution)
+	}
+}
+
+func TestHiddenTriplesSolving(t *testing.T) {
+	log := log.New(ioutil.Discard, "", 0)
+	b := NewBoard(log, "000000000000000012000034000000000300005006400070100008000200070304000500600000000")
+
+	solution := "758612943439587612162934785246879351815326497973145268591263874384791526627458139"
+	b.solve(6, 0)
+
+	if solution != b.codeStr() {
+		t.Errorf("Board: %s, is not solved correctly: %s", b.codeStr(), solution)
+	}
+}
+
+func TestHiddenQuadsSolving(t *testing.T) {
+	log := log.New(ioutil.Discard, "", 0)
+	b := NewBoard(log, "000000001000000023004005000000006000070000000120030000000210070006000400500080000")
+
+	solution := "857362941961748523234195867493576218675821394128439756389214675716953482542687139"
 	b.solve(8, 0)
 
-	if b.isSolved() {
-		t.Errorf("Board: %s, can't be solved with given strategies", b.codeStr())
+	if solution != b.codeStr() {
+		t.Errorf("Board: %s, is not solved correctly: %s", b.codeStr(), solution)
 	}
 }
 

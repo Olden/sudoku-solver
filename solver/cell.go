@@ -111,12 +111,14 @@ func (c *Cell) exclude(ds []float64) bool {
 	return len(c.candidates) < n
 }
 
-// func (c *Cell) includeOnly(ds float64) bool {
-// 	n := len(c.candidates)
-// 	c.candidates = []float64{ds}
+func (c *Cell) includeOnly(ds []float64) bool {
+	n := len(c.candidates)
+	intersection, _ := Intersect(c.candidates, ds)
 
-// 	return len(c.candidates) < n
-// }
+	c.candidates = intersection.Interface().([]float64)
+
+	return len(c.candidates) < n
+}
 
 func (c *Cell) isCandidate(can float64) bool {
 	for _, v := range c.candidates {

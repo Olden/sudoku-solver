@@ -3,6 +3,8 @@ package solver
 import (
 	"reflect"
 	"testing"
+
+	"github.com/davecgh/go-spew/spew"
 )
 
 func TestAny(t *testing.T) {
@@ -115,5 +117,43 @@ func TestTranspose(t *testing.T) {
 
 	if !reflect.DeepEqual(Transpose(a...), ex) {
 		t.Errorf("transpose didnt work")
+	}
+}
+
+func TestCombinations(t *testing.T) {
+	c := []*Cell{
+		NewCellFromInt(0, 0, 1),
+		NewCellFromInt(0, 1, 1),
+		NewCellFromInt(0, 2, 1),
+		NewCellFromInt(0, 3, 1),
+	}
+
+	ex := [][]*Cell{
+		[]*Cell{
+			NewCellFromInt(0, 0, 1),
+			NewCellFromInt(0, 1, 1),
+			NewCellFromInt(0, 2, 1),
+		},
+		[]*Cell{
+			NewCellFromInt(0, 0, 1),
+			NewCellFromInt(0, 1, 1),
+			NewCellFromInt(0, 3, 1),
+		},
+		[]*Cell{
+			NewCellFromInt(0, 0, 1),
+			NewCellFromInt(0, 2, 1),
+			NewCellFromInt(0, 3, 1),
+		},
+		[]*Cell{
+			NewCellFromInt(0, 1, 1),
+			NewCellFromInt(0, 2, 1),
+			NewCellFromInt(0, 3, 1),
+		},
+	}
+
+	r := Combinations(c, 3)
+
+	if !reflect.DeepEqual(ex, r) {
+		t.Errorf("combinations didnt work ex: %s, result: %s", spew.Sprint(ex), spew.Sprint(r))
 	}
 }

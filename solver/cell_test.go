@@ -3,6 +3,8 @@ package solver
 import (
 	"reflect"
 	"testing"
+
+	"github.com/davecgh/go-spew/spew"
 )
 
 func TestNewCellConstructWithSingleInt(t *testing.T) {
@@ -145,17 +147,19 @@ func TestStringValue(t *testing.T) {
 }
 
 func TestExclude(t *testing.T) {
-	c := NewCellFromIntSlice(0, 0, []float64{1, 2, 3, 4, 5, 6, 7, 8, 9})
+	c := NewCellFromIntSlice(0, 0, []float64{4, 6, 7, 8})
 
-	if c.exclude([]float64{9}) != true {
-		t.Errorf("must be excluded")
+	r := c.exclude([]float64{6, 7})
+	ex := []float64{4, 8}
+	if r != true || !reflect.DeepEqual(c.candidates, ex) {
+		t.Errorf("must be excluded: %s, result: %s", spew.Sprint(c.candidates), spew.Sprint(ex))
 	}
 }
 
-// func TestIncludeOnly(t *testing.T) {
-// 	c := NewCellFromIntSlice(0, 0, []float64{1, 2, 3, 4, 5, 6, 7, 8, 9})
+func TestIncludeOnly(t *testing.T) {
+	c := NewCellFromIntSlice(0, 0, []float64{1, 2, 3, 4, 5, 6, 7, 8, 9})
 
-// 	if c.includeOnly(9) != true {
-// 		t.Errorf("must be included")
-// 	}
-// }
+	if c.includeOnly([]float64{9}) != true {
+		t.Errorf("must be included")
+	}
+}
